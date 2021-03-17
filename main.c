@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <ncursesw/curses.h>
 #include <locale.h>
+#include <unistd.h>
 #include "snakegame.h"
 
 int main()
@@ -25,6 +26,17 @@ int main()
 	printInitSnA(win);
 
 	wrefresh(win); //특정 윈도우 새로고침
+
+	//moveSnake(win);
+	
+	while(1)
+	{       
+		wattron(win, COLOR_PAIR(2));
+		deleteTail(win);
+		addHead(win);
+		wrefresh(win);
+		sleep(1);
+	}
 	getch();
 	delwin(win);//윈도우 메모리 해제
 	endwin();//윈도우 종료
