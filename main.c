@@ -2,6 +2,8 @@
 #include <ncursesw/curses.h>
 #include <locale.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <sys/time.h>
 #include "snakegame.h"
 
 int main()
@@ -10,6 +12,10 @@ int main()
 	WINDOW *win; // 객체 생성
 	setlocale(LC_ALL, "ko_KR.utf8");
 	initscr(); //curses모드를 시작
+	
+	curs_set(0);
+	noecho();
+
 	start_color();//color모드를 시작
 	
 	init_pair(1, COLOR_WHITE, COLOR_BLACK);//컬러를 설정
@@ -28,14 +34,26 @@ int main()
 	wrefresh(win); //특정 윈도우 새로고침
 
 	//moveSnake(win);
-	
+	nPlaying = 0;
+	struct timeval tvStart, tvNow, tvGep;
+	gettimeofday(&tvStart, NULL);
 	while(1)
 	{       
-		wattron(win, COLOR_PAIR(2));
-		deleteTail(win);
-		addHead(win);
+		getInput();
+	
+		gettimeofday(&tvNow,NULL);
+		tvGep.tv_sec = tvNow.tv_sec - tvStart.tv_sec;
+		tvGep.tv_usec = tvNow.tv_usec - tvStart.tv_usec;
+		if (tvGep.tv_usec < 0)
+			tvGep.tv_usec += 1000000;
+
+		if (nPlaying && tvGep.tv_usec >= 250000)
+		{
+			wattron(win, COLOR_PAIR(2));
+			addHead(win);
+			gettimeofday(&tvStart, NULL);
+		}
 		wrefresh(win);
-		sleep(1);
 	}
 	getch();
 	delwin(win);//윈도우 메모리 해제
