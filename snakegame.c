@@ -11,6 +11,7 @@ int nOldPt = -1;
 int nDirection[40];
 int nXBending[40];
 int nYBending[40];
+int nLength = 10;
 
 void printWalls(WINDOW *win)
 {
@@ -55,13 +56,14 @@ void addHead(WINDOW* win)
 				nXHead++;
 				ch = "▼ ";
 				break;
-			case 2:
+                        case 2:
+                                nYHead++;
+                                ch = "▶ ";
+                                break;
+
+			case 3:
 				nYHead--;
 				ch = "◀ ";
-				break;
-			case 3:
-				nYHead++;
-				ch = "▶ ";
 				break;
 		}	
                 mvwprintw(win, nXHead, nYHead*2, "%s", ch);
@@ -75,8 +77,24 @@ void getInput()
 		int ch1 = _getch();
 		if (ch1 == 27)
 		{
-			if (nLatePt == -1)
-				nOldPt++;
+			int ch2 = _getch();
+			int ch3 = _getch();
+			
+			if (nLatePt == -1 && ch3 == 68)//게임시작전 입력 키가 <-일때
+				return;
+
+			//진행방향과 같은 축의 방향키를 입력했을 때
+			if (nDirection[nLatePt] == 0 ||nDirection[nLatePt] == 1)
+			{
+				if (ch3 == 65 || ch3 == 66)
+					return;
+			}
+			else //2,3
+			{
+				if (ch3 == 67 || ch3 == 68)
+					return;
+			}
+
 			nLatePt++;
 			if (nLatePt >= 40)
 				nLatePt -= 40;
@@ -84,8 +102,6 @@ void getInput()
 			nXBending[nLatePt] = nXHead;
 			nYBending[nLatePt] = nYHead;
 
-			int ch2 = _getch();
-			int ch3 = _getch();
 			switch (ch3)
 			{
 				case 65://up
@@ -95,14 +111,15 @@ void getInput()
 					nDirection[nLatePt] = 1;
 					break;
 				case 67://right
-					nDirection[nLatePt] = 3;
-					break;
-				case 68://left
 					nDirection[nLatePt] = 2;
 					break;
+				case 68://left
+					nDirection[nLatePt] = 3;
+					break;
 			}
-			nPlaying = 1;
 			
+			nPlaying = 1;
+				
 		}
 	}
 }

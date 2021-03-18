@@ -40,7 +40,7 @@ int main()
 	while(1)
 	{       
 		getInput();
-	
+
 		gettimeofday(&tvNow,NULL);
 		tvGep.tv_sec = tvNow.tv_sec - tvStart.tv_sec;
 		tvGep.tv_usec = tvNow.tv_usec - tvStart.tv_usec;
