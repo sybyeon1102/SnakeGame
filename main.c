@@ -24,7 +24,7 @@ int main()
 
 	refresh();//화면에 찍은 내용을 갱신
 
-	win = newwin(17, 19*2, 1, 1);//새로운 윈도우를 생성
+	win = newwin(17+10, 19*2, 1, 1);//새로운 윈도우를 생성
 	wbkgd(win, COLOR_PAIR(1));//win에 색쌍 적용
 	wattron(win, COLOR_PAIR(1));//?
 
@@ -39,19 +39,33 @@ int main()
 	gettimeofday(&tvStart, NULL);
 	while(1)
 	{       
-		getInput();
-
+		if (!nPlaying)
+		{
+			getInput();
+		}
 		gettimeofday(&tvNow,NULL);
 		tvGep.tv_sec = tvNow.tv_sec - tvStart.tv_sec;
 		tvGep.tv_usec = tvNow.tv_usec - tvStart.tv_usec;
 		if (tvGep.tv_usec < 0)
+		{
 			tvGep.tv_usec += 1000000;
+		}
 
 		if (nPlaying && tvGep.tv_usec >= 250000)
 		{
 			wattron(win, COLOR_PAIR(2));
+			getInput();
+			deleteTail(win);
 			addHead(win);
 			gettimeofday(&tvStart, NULL);
+		}
+		
+		mvwprintw(win, 17, 0, "tail %d %d", nXTail, nYTail);
+		for (int i = 0; i < 10; i++)
+		{
+			mvwprintw(win, i + 18, 0, "%d %d %d %d", 
+					i, nDirection[i], 
+					nXBending[i], nYBending[i]); 
 		}
 		wrefresh(win);
 	}
