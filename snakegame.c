@@ -101,15 +101,14 @@ void addNewApple(WINDOW* win)
 {
         if (nXHead == nXApple && nYHead == nYApple)
         {
-                //nLength++;
-
                 srand(time(NULL));
                 nXApple = rand() % 15; nXApple++;
                 nYApple = rand() % 17; nYApple++;
+		int x = nXHead; int y = nYHead;
 		int len = nLength; int pt = nLatePt;
-		while(len > 1)
+		while(len > 0)
 		{
-			if (x == nXApple && y == nYApple)
+			if (x < nXApple + 1 && x > nXApple - 1 && y > nYApple - 1 && y < nYApple + 1)
 			{
 				len = nLength;
 				x = nXHead; y = nYHead;
@@ -120,31 +119,33 @@ void addNewApple(WINDOW* win)
 	                {
         	                pt--;
                 	        if (pt < 0)
- 	                       {
+ 	                        {
 	                                pt += 40;
         	                }
 	                }
-        	        //nDirection[pt]사용하여 머리부터 꼬리까지 따라가기
-               		 switch (nDirection[pt])
-	                {
-        	                case 0:
-                	                x++;
+	        	//nDirection[pt]사용하여 머리부터 꼬리까지 따라가기
+	               	switch (nDirection[pt])
+		        {
+      		  	        case 0:
+                			x++;
                         	        break;
-	                        case 1:
-        	                        x--;
-                	                break;
-                        	case 2:
-                                	y--;
-	                                break;
-        	                case 3:
-                	                y++;
-                        	        break;
-	                }
+	     		        case 1:
+        	      	                x--;
+               	        	        break;
+                       		case 2:
+                               		y--;
+                        		break;
+	       	                case 3:
+        	      	                y++;
+               	        	        break;
+	       		}
 			len--;
 		}
 
                 wattron(win, COLOR_PAIR(3));
                 mvwprintw(win, nXApple, nYApple*2, "■ ");
+
+		nLength++;
         }
 
 
