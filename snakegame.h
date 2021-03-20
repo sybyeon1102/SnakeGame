@@ -7,6 +7,9 @@ extern int nLatePt, nOldPt;
 extern int nDirection[40];
 extern int nXBending[40];
 extern int nYBending[40];
+extern int nLength;
+extern int nPassedFirst;
+extern int nNotBent;
 
 extern void printWalls(WINDOW*);
 extern void printInitSnA(WINDOW*);

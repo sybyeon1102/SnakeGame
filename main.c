@@ -24,7 +24,7 @@ int main()
 
 	refresh();//화면에 찍은 내용을 갱신
 
-	win = newwin(17+10, 19*2, 1, 1);//새로운 윈도우를 생성
+	win = newwin(17+11, /*19*2*/80, 1, 1);//새로운 윈도우를 생성
 	wbkgd(win, COLOR_PAIR(1));//win에 색쌍 적용
 	wattron(win, COLOR_PAIR(1));//?
 
@@ -51,7 +51,7 @@ int main()
 			tvGep.tv_usec += 1000000;
 		}
 
-		if (nPlaying && tvGep.tv_usec >= 250000)
+		if (nPlaying && tvGep.tv_usec >= 200000)
 		{
 			wattron(win, COLOR_PAIR(2));
 			getInput();
@@ -60,12 +60,25 @@ int main()
 			gettimeofday(&tvStart, NULL);
 		}
 		
-		mvwprintw(win, 17, 0, "tail %d %d", nXTail, nYTail);
+		//print fot test
+		mvwprintw(win, 17, 0, "tail %03d %03d", nXTail, nYTail);
+		mvwprintw(win, 17, 20, "head %03d %03d", nXHead, nYHead);
+		mvwprintw(win, 17, 40, "Latest %03d ", nLatePt);
 		for (int i = 0; i < 10; i++)
 		{
-			mvwprintw(win, i + 18, 0, "%d %d %d %d", 
+			mvwprintw(win, i + 18, 0, "%03d %03d %03d %03d", 
 					i, nDirection[i], 
 					nXBending[i], nYBending[i]); 
+			mvwprintw(win, i + 18, 20, "%03d %03d %03d %03d", 
+					i+10, nDirection[i+10], 
+					nXBending[i+10], nYBending[i+10]); 
+			mvwprintw(win, i + 18, 40, "%03d %03d %03d %03d", 
+					i+20, nDirection[i+20], 
+					nXBending[i+20], nYBending[i+20]);
+			mvwprintw(win, i + 18, 60, "%03d %03d %03d %03d", 
+					i+30, nDirection[i+30], 
+					nXBending[i+30], nYBending[i+30]);
+
 		}
 		wrefresh(win);
 	}

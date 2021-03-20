@@ -12,6 +12,8 @@ int nDirection[40];
 int nXBending[40];
 int nYBending[40];
 int nLength = 10;
+int nPassedFirst = 0;
+int nNotBent = 1;
 
 void printWalls(WINDOW *win)
 {
@@ -41,52 +43,60 @@ void printInitSnA(WINDOW *win)
 void deleteTail(WINDOW* win)
 {
 	mvwprintw(win, nXTail, nYTail*2, " ");
-	//꼬리좌표 업데이트
-	if (nLatePt == 0)//꺾은 적 없음
+	//*****꼬리좌표 업데이트*****
+	//꺾은 적 없음
+	if (nLatePt == 0 && nNotBent == 1)
 	{
 		nYTail++;
 		return;
 	}
 	//꺾었으나 첫 꺾인 점 못 지남
-	if (nLatePt == 1 && nXTail == nXBending[0] && nYTail < nYBending[0])
+	if (nPassedFirst == 0 && nLatePt == 1 && nXTail == nXBending[1] && nYTail < nYBending[1])
 	{
 		nYTail++;
+		nNotBent = 0;
 		return;
 	}
 	
 	//첫 꺾인 점 지남
 	nXTail = nXHead; nYTail = nYHead;
-	int temp = 10;
+	nPassedFirst = 1;
+	int temp = nLength;
 	int pt = nLatePt;
 	while (temp > 1)
 	{
+		//
 		if (nXTail == nXBending[pt] && nYTail == nYBending[pt])
 		{
 			pt--;
-			if (pt == -1)//pt < 0일 경우 처리
+			//if (pt == -1)//pt < 0일 경우 처리
+			//{
+			//	nYTail--;
+			//}
+			if (pt < 0)
 			{
-				nYTail--;
+				pt += 40;
 			}
 		}
 		//nDirection[pt]사용하여 머리부터 꼬리까지 따라가기
-		if (pt != -1)
+//		if (pt != -1)
+//		{
+		switch (nDirection[pt])
 		{
-			switch (nDirection[pt])
-			{
-				case 0:
-					nXTail++;
-					break;
-				case 1:
-					nXTail--;
-					break;
-				case 2:
-					nYTail--;
-					break;
-				case 3:
-					nYTail++;
-					break;
-			}
+			case 0:
+				nXTail++;
+				break;
+			case 1:
+				nXTail--;
+				break;
+			case 2:
+				nYTail--;
+				break;
+			case 3:
+				nYTail++;
+				break;
 		}
+//		}
 		temp--;
 	}
 }
