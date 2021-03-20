@@ -58,6 +58,14 @@ int main()
 			deleteTail(win);
 			addHead(win);
 			gettimeofday(&tvStart, NULL);
+			if (nPlaying == 0)
+			{
+				wattron(win, COLOR_PAIR(3));
+				mvwprintw(win, 8, 6*2, "GAME  OVER");
+				wrefresh(win);
+				sleep(3);
+				break;
+			}
 		}
 		
 		//print fot test

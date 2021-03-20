@@ -13,7 +13,7 @@ int nOldPt = -1;
 int nDirection[40];
 int nXBending[40];
 int nYBending[40];
-int nLength = 10;
+int nLength = 3;
 int nPassedFirst = 0;
 int nNotBent = 1;
 int nXApple, nYApple;
@@ -33,9 +33,9 @@ void printWalls(WINDOW *win)
 void printInitSnA(WINDOW *win)
 {
 	wattron(win, COLOR_PAIR(2));
-	mvwprintw(win, 8, 1*2, "■ ■ ■ ■ ■ ■ ■ ■ ■ ▶ ");
+	mvwprintw(win, 8, 1*2, "■ ■ ▶ ");
 	
-	nXHead = 8; nYHead = 10;
+	nXHead = 8; nYHead = 3;
 	nXTail = 8; nYTail = 1;
 
 	wattron(win, COLOR_PAIR(3));
@@ -151,6 +151,51 @@ void addNewApple(WINDOW* win)
 
 }
 
+int isCrushing()
+{
+	//벽과 충돌
+	if (nXHead == 0 || nXHead == 16 || nYHead == 0 || nYHead == 18)
+	{
+		return 1;
+	}
+	//몸통과 충돌
+	int x = nXHead; int y = nYHead;
+	int pt = nLatePt; int len = nLength;
+	while(len > 1)
+	{
+		if (x == nXBending[pt] && y == nYBending[pt])
+		{
+			pt--;
+			if (pt < 0)
+			{
+				pt += 40;
+			}
+		}
+                switch (nDirection[pt])
+                {
+                        case 0:
+                                x++;
+                                break;
+                        case 1:
+                                x--;
+                                break;
+                        case 2:
+                                y--;
+                                break;
+                        case 3:
+                                y++;
+                                break;
+                }
+		if(x == nXHead && y == nYHead)
+		{
+			return 1;
+		}
+		len--;
+	}
+
+	
+	return 0;
+}
 void addHead(WINDOW* win)
 {
         mvwprintw(win, nXHead, nYHead*2, "■ ");
@@ -176,6 +221,11 @@ void addHead(WINDOW* win)
         }
         mvwprintw(win, nXHead, nYHead*2, "%s", ch);
 
+	if (isCrushing())
+	{
+		nPlaying = 0;
+		return;
+	}
         addNewApple(win);
 }
 
