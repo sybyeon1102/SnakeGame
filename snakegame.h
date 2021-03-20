@@ -10,9 +10,11 @@ extern int nYBending[40];
 extern int nLength;
 extern int nPassedFirst;
 extern int nNotBent;
+extern int nXApple, nYApple;
 
 extern void printWalls(WINDOW*);
 extern void printInitSnA(WINDOW*);
 extern void deleteTail(WINDOW*);
 extern void addHead(WINDOW*);
+extern void addNewApple(WINDOW*);
 extern void getInput();

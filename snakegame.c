@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <ncursesw/curses.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <time.h>
 #include "event.h"
 
 int nXHead, nYHead;
@@ -14,6 +16,7 @@ int nYBending[40];
 int nLength = 10;
 int nPassedFirst = 0;
 int nNotBent = 1;
+int nXApple, nYApple;
 
 void printWalls(WINDOW *win)
 {
@@ -38,6 +41,7 @@ void printInitSnA(WINDOW *win)
 	wattron(win, COLOR_PAIR(3));
 	mvwprintw(win, 8, 14*2, "■ ");
 	
+	nXApple = 8; nYApple = 14;
 }
 
 void deleteTail(WINDOW* win)
@@ -65,22 +69,15 @@ void deleteTail(WINDOW* win)
 	int pt = nLatePt;
 	while (temp > 1)
 	{
-		//
 		if (nXTail == nXBending[pt] && nYTail == nYBending[pt])
 		{
 			pt--;
-			//if (pt == -1)//pt < 0일 경우 처리
-			//{
-			//	nYTail--;
-			//}
 			if (pt < 0)
 			{
 				pt += 40;
 			}
 		}
 		//nDirection[pt]사용하여 머리부터 꼬리까지 따라가기
-//		if (pt != -1)
-//		{
 		switch (nDirection[pt])
 		{
 			case 0:
@@ -96,34 +93,89 @@ void deleteTail(WINDOW* win)
 				nYTail++;
 				break;
 		}
-//		}
 		temp--;
 	}
 }
+
+void addNewApple(WINDOW* win)
+{
+        if (nXHead == nXApple && nYHead == nYApple)
+        {
+                //nLength++;
+
+                srand(time(NULL));
+                nXApple = rand() % 15; nXApple++;
+                nYApple = rand() % 17; nYApple++;
+		int len = nLength; int pt = nLatePt;
+		while(len > 1)
+		{
+			if (x == nXApple && y == nYApple)
+			{
+				len = nLength;
+				x = nXHead; y = nYHead;
+				nXApple = rand() % 15; nXApple++;
+				nYApple = rand() % 17; nYApple++;
+			}
+	                if (x == nXBending[pt] && y == nYBending[pt])
+	                {
+        	                pt--;
+                	        if (pt < 0)
+ 	                       {
+	                                pt += 40;
+        	                }
+	                }
+        	        //nDirection[pt]사용하여 머리부터 꼬리까지 따라가기
+               		 switch (nDirection[pt])
+	                {
+        	                case 0:
+                	                x++;
+                        	        break;
+	                        case 1:
+        	                        x--;
+                	                break;
+                        	case 2:
+                                	y--;
+	                                break;
+        	                case 3:
+                	                y++;
+                        	        break;
+	                }
+			len--;
+		}
+
+                wattron(win, COLOR_PAIR(3));
+                mvwprintw(win, nXApple, nYApple*2, "■ ");
+        }
+
+
+}
+
 void addHead(WINDOW* win)
 {
-	mvwprintw(win, nXHead, nYHead*2, "■ ");
-	char *ch;
-	switch (nDirection[nLatePt])
-	{
-		case 0: 
-			nXHead--;
-			ch = "▲ ";
-			break;
-		case 1:
-			nXHead++;
-			ch = "▼ ";
-			break;
-		case 2:
-			nYHead++;
-			ch = "▶ ";
-			break;
-		case 3:
-			nYHead--;
-			ch = "◀ ";
-			break;
-	}	
-	mvwprintw(win, nXHead, nYHead*2, "%s", ch);
+        mvwprintw(win, nXHead, nYHead*2, "■ ");
+        char *ch;
+        switch (nDirection[nLatePt])
+        {
+                case 0:
+                        nXHead--;
+                        ch = "▲ ";
+                        break;
+                case 1:
+                        nXHead++;
+                        ch = "▼ ";
+                        break;
+                case 2:
+                        nYHead++;
+                        ch = "▶ ";
+                        break;
+                case 3:
+                        nYHead--;
+                        ch = "◀ ";
+                        break;
+        }
+        mvwprintw(win, nXHead, nYHead*2, "%s", ch);
+
+        addNewApple(win);
 }
 
 void getInput()
