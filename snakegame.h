@@ -11,6 +11,7 @@ extern int nLength;
 extern int nPassedFirst;
 extern int nNotBent;
 extern int nXApple, nYApple;
+extern int nAppleCount;
 
 extern void printWalls(WINDOW*);
 extern void printInitSnA(WINDOW*);

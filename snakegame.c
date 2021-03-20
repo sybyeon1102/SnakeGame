@@ -17,6 +17,7 @@ int nLength = 3;
 int nPassedFirst = 0;
 int nNotBent = 1;
 int nXApple, nYApple;
+int nAppleCount = 0;
 
 void printWalls(WINDOW *win)
 {
@@ -67,7 +68,7 @@ void deleteTail(WINDOW* win)
 	nPassedFirst = 1;
 	int temp = nLength;
 	int pt = nLatePt;
-	while (temp > 1)
+	while (temp > 2)
 	{
 		if (nXTail == nXBending[pt] && nYTail == nYBending[pt])
 		{
@@ -101,12 +102,15 @@ void addNewApple(WINDOW* win)
 {
         if (nXHead == nXApple && nYHead == nYApple)
         {
-                srand(time(NULL));
+		nAppleCount++;
+		nLength++;
+
+		srand(time(NULL));
                 nXApple = rand() % 15; nXApple++;
                 nYApple = rand() % 17; nYApple++;
 		int x = nXHead; int y = nYHead;
 		int len = nLength; int pt = nLatePt;
-		while(len > 0)
+		while(len > 1)
 		{
 			if (x < nXApple + 1 && x > nXApple - 1 && y > nYApple - 1 && y < nYApple + 1)
 			{
@@ -145,7 +149,6 @@ void addNewApple(WINDOW* win)
                 wattron(win, COLOR_PAIR(3));
                 mvwprintw(win, nXApple, nYApple*2, "■ ");
 
-		nLength++;
         }
 
 
@@ -193,7 +196,6 @@ int isCrushing()
 		len--;
 	}
 
-	
 	return 0;
 }
 void addHead(WINDOW* win)

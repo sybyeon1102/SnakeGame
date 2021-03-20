@@ -33,7 +33,6 @@ int main()
 
 	wrefresh(win); //특정 윈도우 새로고침
 
-	//moveSnake(win);
 	nPlaying = 0;
 	struct timeval tvStart, tvNow, tvGep;
 	gettimeofday(&tvStart, NULL);
@@ -51,48 +50,62 @@ int main()
 			tvGep.tv_usec += 1000000;
 		}
 
-		if (nPlaying && tvGep.tv_usec >= 200000)
+		if (nPlaying && tvGep.tv_usec >= 250000)
 		{
 			wattron(win, COLOR_PAIR(2));
 			getInput();
 			deleteTail(win);
 			addHead(win);
+		
 			gettimeofday(&tvStart, NULL);
+		
 			if (nPlaying == 0)
 			{
 				wattron(win, COLOR_PAIR(3));
-				mvwprintw(win, 8, 6*2, "GAME  OVER");
+				mvwprintw(win, 8, 7*2, "GAME  OVER");
 				wrefresh(win);
-				sleep(3);
 				break;
 			}
 		}
-		
-		//print fot test
-		mvwprintw(win, 17, 0, "tail %03d %03d", nXTail, nYTail);
-		mvwprintw(win, 17, 20, "head %03d %03d", nXHead, nYHead);
-		mvwprintw(win, 17, 40, "Latest %03d ", nLatePt);
+	
+		wattron(win, COLOR_PAIR(3));	
+		mvwprintw(win, 17, 0, "Apples : %d", nAppleCount);
+		mvwprintw(win, 17, 20, "Length : %d", nLength);
+
+		//*****print fot test
+		wattron(win, COLOR_PAIR(2));
+		mvwprintw(win, 18, 0, "tail %03d %03d", nXTail, nYTail);
+		mvwprintw(win, 18, 20, "head %03d %03d", nXHead, nYHead);
+		mvwprintw(win, 18, 40, "Latest %03d ", nLatePt);
 		for (int i = 0; i < 10; i++)
 		{
-			mvwprintw(win, i + 18, 0, "%03d %03d %03d %03d", 
+			mvwprintw(win, i + 19, 0, "%03d %03d %03d %03d", 
 					i, nDirection[i], 
 					nXBending[i], nYBending[i]); 
-			mvwprintw(win, i + 18, 20, "%03d %03d %03d %03d", 
+			mvwprintw(win, i + 19, 20, "%03d %03d %03d %03d", 
 					i+10, nDirection[i+10], 
 					nXBending[i+10], nYBending[i+10]); 
-			mvwprintw(win, i + 18, 40, "%03d %03d %03d %03d", 
+			mvwprintw(win, i + 19, 40, "%03d %03d %03d %03d", 
 					i+20, nDirection[i+20], 
 					nXBending[i+20], nYBending[i+20]);
-			mvwprintw(win, i + 18, 60, "%03d %03d %03d %03d", 
+			mvwprintw(win, i + 19, 60, "%03d %03d %03d %03d", 
 					i+30, nDirection[i+30], 
 					nXBending[i+30], nYBending[i+30]);
 
 		}
+		
 		wrefresh(win);
 	}
-	getch();
-	delwin(win);//윈도우 메모리 해제
-	endwin();//윈도우 종료
+	char ch;
+	while(1)
+	{
+		ch = getchar();
+		if (ch == 'q')
+		{
+			delwin(win);//윈도우 메모리 해제
+			endwin();//윈도우 종료
+		}
+	}
 
 	return 0;
 }
