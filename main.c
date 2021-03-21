@@ -56,13 +56,16 @@ int main()
 			getInput();
 			deleteTail(win);
 			addHead(win);
-		
+			wattron(win, COLOR_PAIR(3));
+			mvwprintw(win, nXApple, nYApple*2, "■ ");
+			wrefresh(win);//test
 			gettimeofday(&tvStart, NULL);
 		
 			if (nPlaying == 0)
 			{
 				wattron(win, COLOR_PAIR(3));
 				mvwprintw(win, 8, 7*2, "GAME  OVER");
+				mvwprintw(win, 9, 5*2, "Press 'q' to exit.");
 				wrefresh(win);
 				break;
 			}
@@ -94,7 +97,7 @@ int main()
 
 		}
 		
-		wrefresh(win);
+//		wrefresh(win);
 	}
 	char ch;
 	while(1)
@@ -104,8 +107,8 @@ int main()
 		{
 			delwin(win);//윈도우 메모리 해제
 			endwin();//윈도우 종료
+			return 0;
 		}
-	}
 
-	return 0;
+	}
 }
