@@ -56,8 +56,8 @@ int main()
 			getInput();
 			deleteTail(win);
 			addHead(win);
-			wattron(win, COLOR_PAIR(3));
-			mvwprintw(win, nXApple, nYApple*2, "■ ");
+//			wattron(win, COLOR_PAIR(3));
+//			mvwprintw(win, nXApple, nYApple*2, "■ ");
 			wrefresh(win);//test
 			gettimeofday(&tvStart, NULL);
 		

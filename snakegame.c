@@ -148,6 +148,8 @@ void addNewApple(WINDOW* win)
 			}
 			len--;
 		}
+		wattron(win, COLOR_PAIR(3));
+		mvwprintw(win, nXApple, nYApple*2, "■ ");
         }
 }
 
