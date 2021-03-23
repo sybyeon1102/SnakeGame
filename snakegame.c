@@ -4,97 +4,104 @@
 #include <stdlib.h>
 #include <time.h>
 #include "event.h"
+#include "define.h"
 
 int nXHead, nYHead;
 int nXTail, nYTail;
 int nPlaying;
-int nLatePt = -1;
-int nOldPt = -1;
-int nDirection[40];
-int nXBending[40];
-int nYBending[40];
-int nLength = 3;
-int nPassedFirst = 0;
-int nNotBent = 1;
+int nLatePt;
+int nDirection[ARR_SIZE];
+int nXBending[ARR_SIZE];
+int nYBending[ARR_SIZE];
+int nLength;
+int nPassedFirst;
+int nNotBent;
 int nXApple, nYApple;
-int nAppleCount = 0;
+int nAppleCount;
 
 void printWalls(WINDOW *win)
 {
-	mvwprintw(win, 0, 0,"■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■i");
-	for (int i = 1; i < 16; i++)
+	mvwprintw(win, WALL_TOP, WALL_LEFT*2,
+			"■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■i");
+	for (int i = WALL_TOP + 1; i < WALL_BOTTOM; i++)
 	{
-		mvwprintw(win, i, 0,"■ "); 
-		mvwprintw(win, i, 18*2, "■ ");
-//		mvwprintw(win, i, 0, "■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■i");
+		mvwprintw(win, i, WALL_LEFT*2,"■ "); 
+		mvwprintw(win, i, WALL_RIGHT*2, "■ ");
 	}
-	mvwprintw(win, 16, 0,"■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■i");
+	mvwprintw(win, WALL_BOTTOM, WALL_LEFT*2,
+			"■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■i");
 }
 
 void printInitSnA(WINDOW *win)
 {
-	wattron(win, COLOR_PAIR(2));
-	mvwprintw(win, 8, 1*2, "■ ■ ▶ ");
-	
-	nXHead = 8; nYHead = 3;
-	nXTail = 8; nYTail = 1;
+	//***뱀 사과 위치 초기화 및 출력
+	nXHead = WALL_BOTTOM/2; nYHead = WALL_LEFT + 3;
+	nXTail = WALL_BOTTOM/2; nYTail = WALL_LEFT + 1;
 
-	wattron(win, COLOR_PAIR(3));
-	mvwprintw(win, 8, 14*2, "■ ");
+	wattron(win, COLOR_PAIR(2));
+	mvwprintw(win, nXTail, nYTail*2, "■ ■ ▶ ");
 	
-	nXApple = 8; nYApple = 14;
+	nXApple = WALL_BOTTOM/2; nYApple = WALL_RIGHT - 4;
+	
+	wattron(win, COLOR_PAIR(3));
+	mvwprintw(win, nXApple, nYApple*2, "■ ");
+	
+	//***기타 전역변수 초기화
+	nLatePt = -1;
+	nLength = 3;
+	nPassedFirst = 0;
+	nNotBent = 1;
+	nAppleCount = 0;
 }
 
 void deleteTail(WINDOW* win)
 {
 	mvwprintw(win, nXTail, nYTail*2, " ");
-	//*****꼬리좌표 업데이트*****
-	//꺾은 적 없음
+	//게임을 시작한 후 몸통을 꺾은 적 없음
 	if (nLatePt == 0 && nNotBent == 1)
 	{
 		nYTail++;
 		return;
 	}
-	//꺾었으나 첫 꺾인 점 못 지남
-	if (nPassedFirst == 0 && nLatePt == 1 && nXTail == nXBending[1] && nYTail < nYBending[1])
+	//몸통을 꺾었으나 꼬리가 첫 꺾인 점 못 지남
+	if (!nPassedFirst && nLatePt 
+			&& nXTail == nXBending[nLatePt] && nYTail < nYBending[nLatePt])
 	{
 		nYTail++;
 		nNotBent = 0;
 		return;
 	}
-	
-	//첫 꺾인 점 지남
-	nXTail = nXHead; nYTail = nYHead;
+	//꼬리가 첫 꺾인 점 지남
 	nPassedFirst = 1;
-	int temp = nLength;
+	nXTail = nXHead; nYTail = nYHead;
+	int len = nLength;
 	int pt = nLatePt;
-	while (temp > 2)
+	while (len > 2)
 	{
 		if (nXTail == nXBending[pt] && nYTail == nYBending[pt])
 		{
 			pt--;
 			if (pt < 0)
 			{
-				pt += 40;
+				pt += ARR_SIZE;
 			}
 		}
-		//nDirection[pt]사용하여 머리부터 꼬리까지 따라가기
 		switch (nDirection[pt])
 		{
-			case 0:
+			case UP:
 				nXTail++;
 				break;
-			case 1:
+			case DOWN:
 				nXTail--;
 				break;
-			case 2:
+			case RIGHT:
 				nYTail--;
 				break;
-			case 3:
+			case LEFT:
 				nYTail++;
 				break;
 		}
-		temp--;
+		len--;
 	}
 }
 
@@ -107,7 +114,7 @@ void addNewApple(WINDOW* win)
 		
 		int x = nXHead; int y = nYHead;
 		int len = nLength; int pt = nLatePt;
-		while(len > -1)
+		while(len > 1)// -1)
 		{	
 			if (nXApple == x && nYApple == y)
 			{
@@ -116,8 +123,8 @@ void addNewApple(WINDOW* win)
 				pt = nLatePt;
 
 				srand(time(NULL));
-				nXApple = rand() % 15; nXApple++;
-				nYApple = rand() % 17; nYApple++;
+				nXApple = rand() % (WALL_BOTTOM - 1) ; nXApple++;
+				nYApple = rand() % (WALL_RIGHT - 1); nYApple++;
 			}
 			else
 			{
@@ -126,22 +133,21 @@ void addNewApple(WINDOW* win)
         	                	pt--;
                 	        	if (pt < 0)
  	                        	{
-	                                	pt += 40;
+	                                	pt += ARR_SIZE;
         	                	}
 	                	}
-	        		//nDirection[pt]사용하여 머리부터 꼬리까지 따라가기
 	               		switch (nDirection[pt])
 		        	{
-      		  	        	case 0:
+      		  	        	case UP:
                 				x++;
             		            	        break;
-	     			        case 1:
+	     			        case DOWN:
         	      	        	        x--;
 	               	        	        break;
-        	               		case 2:
+        	               		case RIGHT:
                 	               		y--;
                         			break;
-	 	      	                case 3:
+	 	      	                case LEFT:
         		      	                y++;
                	        		        break;
 	       			}
@@ -156,35 +162,36 @@ void addNewApple(WINDOW* win)
 int isCrushing()
 {
 	//벽과 충돌
-	if (nXHead == 0 || nXHead == 16 || nYHead == 0 || nYHead == 18)
+	if (nXHead == WALL_TOP || nXHead == WALL_BOTTOM 
+			|| nYHead == WALL_LEFT || nYHead == WALL_RIGHT)
 	{
 		return 1;
 	}
 	//몸통과 충돌
 	int x = nXHead; int y = nYHead;
 	int pt = nLatePt; int len = nLength;
-	while(len > 1)
+	while(len > 0)//1)
 	{
 		if (x == nXBending[pt] && y == nYBending[pt])
 		{
 			pt--;
 			if (pt < 0)
 			{
-				pt += 40;
+				pt += ARR_SIZE;
 			}
 		}
                 switch (nDirection[pt])
                 {
-                        case 0:
+                        case UP:
                                 x++;
                                 break;
-                        case 1:
+                        case DOWN:
                                 x--;
                                 break;
-                        case 2:
+                        case RIGHT:
                                 y--;
                                 break;
-                        case 3:
+                        case LEFT:
                                 y++;
                                 break;
                 }
@@ -203,19 +210,19 @@ void addHead(WINDOW* win)
         char *ch;
         switch (nDirection[nLatePt])
         {
-                case 0:
+                case UP:
                         nXHead--;
                         ch = "▲ ";
                         break;
-                case 1:
+                case DOWN:
                         nXHead++;
                         ch = "▼ ";
                         break;
-                case 2:
+                case RIGHT:
                         nYHead++;
                         ch = "▶ ";
                         break;
-                case 3:
+                case LEFT:
                         nYHead--;
                         ch = "◀ ";
                         break;
@@ -236,51 +243,51 @@ void getInput()
 	if (_kbhit())
 	{
 		int ch1 = _getch();
-		if (ch1 == 27)
+		if (ch1 == KBRD_DIRECTION)
 		{
 			int ch2 = _getch();
 			int ch3 = _getch();
 			
-			if (nLatePt == -1 && ch3 == 68)//게임시작전 입력 키가 <-일때
+			if (nLatePt == -1 && ch3 == KBRD_LEFT)//게임시작전 입력 키가 <-일때
 				return;
 
 			//진행방향과 같은 축의 방향키를 입력했을 때
-			if (nDirection[nLatePt] == 0 ||nDirection[nLatePt] == 1)
+			if (nDirection[nLatePt] == UP || nDirection[nLatePt] == DOWN)
 			{
-				if (ch3 == 65 || ch3 == 66)
+				if (ch3 == KBRD_UP || ch3 == KBRD_DOWN)
 					return;
 			}
-			else //2,3
+			else //입력 값이 ->, <- 일때
 			{
-				if (ch3 == 67 || ch3 == 68)
+				if (ch3 == KBRD_RIGHT || ch3 == KBRD_LEFT)
 					return;
 			}
 
 			nLatePt++;
-			if (nLatePt >= 40)
-				nLatePt -= 40;
+			if (nLatePt >= ARR_SIZE)
+				nLatePt -= ARR_SIZE;
 
 			nXBending[nLatePt] = nXHead;
 			nYBending[nLatePt] = nYHead;
 
 			switch (ch3)
 			{
-				case 65://up
-					nDirection[nLatePt] = 0;
+				case KBRD_UP:
+					nDirection[nLatePt] = UP;
 					break;
-				case 66://down
-					nDirection[nLatePt] = 1;
+				case KBRD_DOWN:
+					nDirection[nLatePt] = DOWN;
 					break;
-				case 67://right
-					nDirection[nLatePt] = 2;
+				case KBRD_RIGHT:
+					nDirection[nLatePt] = RIGHT;
 					break;
-				case 68://left
-					nDirection[nLatePt] = 3;
+				case KBRD_LEFT:
+					nDirection[nLatePt] = LEFT;
 					break;
 			}
-			
+
 			nPlaying = 1;
-				
 		}
 	}
+	close_keyboard();
 }
